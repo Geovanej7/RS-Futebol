@@ -26,10 +26,9 @@ function ThemeSync({ children }: { children: ReactNode }) {
 }
 
 export function AppProviders({ children }: { children: ReactNode }) {
-  const [mockingReady, setMockingReady] = useState(import.meta.env.PROD);
+  const [mockingReady, setMockingReady] = useState(false);
 
   useEffect(() => {
-    if (import.meta.env.PROD) return;
     startMocking().then(() => setMockingReady(true));
   }, []);
 
