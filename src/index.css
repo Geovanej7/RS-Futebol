@@ -1,0 +1,146 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Base — interface sóbria, quase editorial (o card é o único elemento que "grita") */
+  --color-bg: #0a0e14;
+  --color-surface: #121826;
+  --color-surface-alt: #0e131d;
+  --color-border: #1e2636;
+
+  /* Accents */
+  --color-accent-blue: #3fa9f5;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-green: #22c55e;
+  --color-accent-yellow: #facc15;
+  --color-accent-red: #ef4444;
+  --color-accent-cyan: #06b6d4;
+
+  /* Text */
+  --color-text-primary: #edf1f7;
+  --color-text-secondary: #7c8aa3;
+  --color-text-muted: #5b6780;
+
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Tipografia de assinatura do PlayerCard — números/rótulos, nunca usada na UI geral */
+  --font-display: 'Kanit', 'Inter', sans-serif;
+  --font-condensed: 'Barlow Condensed', 'Inter', sans-serif;
+
+  --ease-base: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+
+  /* Acentos escurecidos para o tema claro — as mesmas cores "vivas" do tema escuro
+     não passam em contraste AA (4.5:1) como texto sobre fundo claro. */
+  --color-accent-blue: #1d6fc7;
+  --color-accent-purple: #6d28d9;
+  --color-accent-green: #15803d;
+  --color-accent-yellow: #a16207;
+  --color-accent-red: #b91c1c;
+  --color-accent-cyan: #0e7490;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface-alt);
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: skeleton-shimmer 1.4s infinite;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-blue);
+  outline-offset: 2px;
+}
+
+/* Respeita a preferência de menos movimento como rede de segurança global — além
+   dos componentes que já checam usePrefersReducedMotion (PlayerCard, grade de Atletas). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Textura de ruído sutil para as camadas de material do PlayerCard (evita look "vetorial demais") */
+.grain-texture {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.card-3d-perspective {
+  perspective: 1000px;
+}
+
+.card-3d-flip {
+  transform-style: preserve-3d;
+}
+
+.card-3d-face {
+  backface-visibility: hidden;
+}
+
+.card-3d-face-back {
+  transform: rotateY(180deg);
+}
