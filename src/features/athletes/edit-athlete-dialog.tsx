@@ -6,8 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { X, Loader2, Camera } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
-import { useUiStore } from '@/store/ui-store';
-import { CATEGORIAS, POSICOES, type Atleta } from '@/entities/athlete';
+import { CATEGORIAS, POSICOES, STATUS_ATLETA, type Atleta, type StatusAtleta } from '@/entities/athlete';
 import {
   athleteFormSchema,
   AvatarPreview,
@@ -18,27 +17,40 @@ import {
   type AthleteFormOutput,
 } from './athlete-form';
 
-type NovoAtletaFormInput = AthleteFormInput;
-type NovoAtletaForm = AthleteFormOutput;
-
-export function NewAthleteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function EditAthleteDialog({
+  atleta,
+  open,
+  onOpenChange,
+}: {
+  atleta: Atleta;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const queryClient = useQueryClient();
-  const setSelectedAthleteId = useUiStore((s) => s.setSelectedAthleteId);
   const fotoInputRef = useRef<HTMLInputElement>(null);
-  const [fotoPreview, setFotoPreview] = useState<string | undefined>(undefined);
+  const [fotoPreview, setFotoPreview] = useState<string | undefined>(atleta.avatarUrl);
+  const [status, setStatus] = useState<StatusAtleta>(atleta.status);
+  const [observacoes, setObservacoes] = useState(atleta.observacoes);
 
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<NovoAtletaFormInput, unknown, NovoAtletaForm>({
+  } = useForm<AthleteFormInput, unknown, AthleteFormOutput>({
     resolver: zodResolver(athleteFormSchema),
     defaultValues: {
-      categoria: 'Sub-15',
-      posicao: 'Meia',
-      peDominante: 'Direito',
+      nome: atleta.nome,
+      dataNascimento: atleta.dataNascimento,
+      categoria: atleta.categoria,
+      posicao: atleta.posicao,
+      peDominante: atleta.peDominante,
+      altura: atleta.altura,
+      peso: atleta.peso,
+      cidade: atleta.cidade,
+      alojamento: atleta.alojamento,
+      responsavel: atleta.responsavel,
+      contato: atleta.contato,
     },
   });
 
@@ -52,22 +64,20 @@ export function NewAthleteDialog({ open, onOpenChange }: { open: boolean; onOpen
   };
 
   const mutation = useMutation({
-    mutationFn: (valores: NovoAtletaForm) =>
-      apiClient.post<Atleta>('/api/athletes', {
+    mutationFn: (valores: AthleteFormOutput) =>
+      apiClient.put<Atleta>(`/api/athletes/${atleta.id}`, {
         ...valores,
         avatarUrl: fotoPreview,
-        dataEntradaClube: new Date().toISOString(),
-        observacoes: '',
+        status,
+        observacoes,
       }),
-    onSuccess: (atleta) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['athletes'] });
-      toast.success('Atleta cadastrado com sucesso');
-      reset();
-      setFotoPreview(undefined);
+      queryClient.invalidateQueries({ queryKey: ['athletes', atleta.id] });
+      toast.success('Atleta atualizado com sucesso');
       onOpenChange(false);
-      setSelectedAthleteId(atleta.id);
     },
-    onError: () => toast.error('Não foi possível cadastrar o atleta'),
+    onError: () => toast.error('Não foi possível atualizar o atleta'),
   });
 
   return (
@@ -75,11 +85,12 @@ export function NewAthleteDialog({ open, onOpenChange }: { open: boolean; onOpen
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60" />
         <Dialog.Content
+          key={atleta.id}
           aria-describedby={undefined}
           className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl border border-border bg-bg p-5 outline-none sm:p-6"
         >
           <div className="mb-4 flex items-center justify-between">
-            <Dialog.Title className="text-base font-semibold text-text-primary">Novo atleta</Dialog.Title>
+            <Dialog.Title className="text-base font-semibold text-text-primary">Editar atleta</Dialog.Title>
             <Dialog.Close aria-label="Fechar" className="rounded-lg p-1 text-text-secondary hover:bg-surface-alt">
               <X size={18} />
             </Dialog.Close>
@@ -181,13 +192,36 @@ export function NewAthleteDialog({ open, onOpenChange }: { open: boolean; onOpen
               </Field>
             </div>
 
+            <label className="block text-sm">
+              <span className="mb-1 block text-xs font-medium text-text-secondary">Status</span>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as StatusAtleta)}
+                className={INPUT_CLASS}
+              >
+                {STATUS_ATLETA.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-sm">
+              <span className="mb-1 block text-xs font-medium text-text-secondary">Observações</span>
+              <textarea
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
+                rows={3}
+                className={INPUT_CLASS}
+              />
+            </label>
+
             <button
               type="submit"
               disabled={isSubmitting}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-blue py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
             >
               {isSubmitting && <Loader2 size={16} className="animate-spin" />}
-              Cadastrar atleta
+              Salvar alterações
             </button>
           </form>
         </Dialog.Content>

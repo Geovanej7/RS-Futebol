@@ -17,7 +17,7 @@ const atletaSchema = z.object({
   altura: z.number(),
   peso: z.number(),
   cidade: z.string(),
-  escola: z.string(),
+  alojamento: z.string(),
   responsavel: z.string(),
   contato: z.string(),
   status: z.string(),

@@ -9,7 +9,10 @@ import {
   saveEvaluation,
   buildBaselineAthlete,
   criarAvaliacao,
+  updateAthlete,
+  deleteAthlete,
   type NotasAvaliacao,
+  type DadosEditaveisAtleta,
 } from './db';
 import type { Atleta } from '@/entities/athlete';
 
@@ -34,6 +37,19 @@ export const handlers = [
     const novoAtleta = buildBaselineAthlete(body);
     addAthlete(novoAtleta);
     return HttpResponse.json(clone(novoAtleta), { status: 201 });
+  }),
+
+  http.put('/api/athletes/:id', async ({ request, params }) => {
+    const body = (await request.json()) as DadosEditaveisAtleta;
+    const atualizado = updateAthlete(params.id as string, body);
+    if (!atualizado) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json(clone(atualizado));
+  }),
+
+  http.delete('/api/athletes/:id', ({ params }) => {
+    const removido = deleteAthlete(params.id as string);
+    if (!removido) return new HttpResponse(null, { status: 404 });
+    return new HttpResponse(null, { status: 204 });
   }),
 
   http.get('/api/evaluations', () => {

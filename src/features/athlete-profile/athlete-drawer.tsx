@@ -2,10 +2,17 @@ import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
 import { useNavigate } from 'react-router-dom';
-import { GitCompare, X } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { GitCompare, Pencil, Trash2, X } from 'lucide-react';
 import { useUiStore } from '@/store/ui-store';
+import { useAuthStore } from '@/store/auth-store';
+import { useEffectivePermissions } from '@/store/permissions-store';
+import { hasAccess } from '@/lib/permissions';
+import { apiClient } from '@/lib/api-client';
 import { useAthlete } from '@/hooks/use-athletes';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { PlayerCard } from '@/components/player-card/player-card';
 import { RarityUpCelebration } from '@/components/player-card/rarity-up-celebration';
 import { calcularRaridade, RARIDADE_CONFIG, type Raridade } from '@/lib/rarity';
@@ -21,6 +28,7 @@ import { ProfileTab } from './profile-tab';
 import { RatingTab } from './rating-tab';
 import { MedicalTab } from './medical-tab';
 import { TimelineTab } from './timeline-tab';
+import { EditAthleteDialog } from '@/features/athletes/edit-athlete-dialog';
 
 const TABS = [
   { value: 'perfil', label: 'Perfil' },
@@ -37,7 +45,13 @@ export function AthleteDrawer() {
   const setSelectedAthleteId = useUiStore((s) => s.setSelectedAthleteId);
   const { data: atleta, isLoading } = useAthlete(selectedAthleteId);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const permissoes = useEffectivePermissions();
+  const podeEscrever = !!user && hasAccess(permissoes, user.perfil, 'atletas', 'escrita');
   const [celebracao, setCelebracao] = useState<{ atleta: Atleta; raridade: Raridade } | null>(null);
+  const [editando, setEditando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
 
   const open = !!selectedAthleteId;
   const raridade = atleta ? calcularRaridade(atleta) : null;
@@ -48,6 +62,21 @@ export function AthleteDrawer() {
     setSelectedAthleteId(null);
     navigate(`/comparativos?atleta=${atleta.id}`);
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: () => apiClient.delete(`/api/athletes/${atleta!.id}`),
+    onSuccess: () => {
+      // remove (em vez de invalidar) a query desse atleta específico — ele não existe mais,
+      // então revalidá-la só geraria um GET /api/athletes/:id fadado a 404.
+      queryClient.removeQueries({ queryKey: ['athletes', atleta!.id] });
+      queryClient.invalidateQueries({ queryKey: ['athletes'], exact: true });
+      queryClient.invalidateQueries({ queryKey: ['evaluations'] });
+      toast.success('Atleta excluído com sucesso');
+      setExcluindo(false);
+      setSelectedAthleteId(null);
+    },
+    onError: () => toast.error('Não foi possível excluir o atleta'),
+  });
 
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && setSelectedAthleteId(null)}>
@@ -91,6 +120,26 @@ export function AthleteDrawer() {
                   <GitCompare size={15} />
                   <span className="hidden sm:inline">Comparar</span>
                 </button>
+                {podeEscrever && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setEditando(true)}
+                      className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-text-primary hover:bg-surface-alt"
+                    >
+                      <Pencil size={15} />
+                      <span className="hidden sm:inline">Editar</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExcluindo(true)}
+                      className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-accent-red hover:bg-surface-alt"
+                    >
+                      <Trash2 size={15} />
+                      <span className="hidden sm:inline">Excluir</span>
+                    </button>
+                  </>
+                )}
                 <Dialog.Close
                   aria-label="Fechar perfil"
                   className="rounded-lg p-2 text-text-secondary hover:bg-surface-alt"
@@ -177,6 +226,20 @@ export function AthleteDrawer() {
             atleta={celebracao.atleta}
             raridade={celebracao.raridade}
             onDone={() => setCelebracao(null)}
+          />
+        )}
+        {atleta && editando && (
+          <EditAthleteDialog atleta={atleta} open={editando} onOpenChange={setEditando} />
+        )}
+        {atleta && (
+          <ConfirmDialog
+            open={excluindo}
+            onOpenChange={setExcluindo}
+            title={`Excluir ${atleta.nome}?`}
+            description="Essa ação não pode ser desfeita. As avaliações registradas para esse atleta também serão removidas."
+            confirmLabel="Excluir"
+            isPending={deleteMutation.isPending}
+            onConfirm={() => deleteMutation.mutate()}
           />
         )}
       </Dialog.Portal>

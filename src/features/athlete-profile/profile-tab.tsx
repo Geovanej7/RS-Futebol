@@ -109,7 +109,7 @@ export function ProfileTab({ atleta }: { atleta: Atleta }) {
           <Info label="IMC" value={calcularImc(atleta.peso, atleta.altura).toFixed(1)} />
           <Info label="Pé dominante" value={atleta.peDominante} />
           <Info label="Cidade" value={atleta.cidade} />
-          <Info label="Escola" value={atleta.escola} />
+          <Info label="Alojamento" value={atleta.alojamento} />
           <Info label="Responsável" value={atleta.responsavel} />
           <Info label="Contato" value={atleta.contato} />
         </dl>

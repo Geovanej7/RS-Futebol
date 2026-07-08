@@ -1,11 +1,27 @@
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { ArrowUpDown, ChevronRight, Download, LayoutGrid, Plus, Rows3, Search, SlidersHorizontal, X } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import {
+  ArrowUpDown,
+  ChevronRight,
+  Download,
+  LayoutGrid,
+  MoreVertical,
+  Pencil,
+  Plus,
+  Rows3,
+  Search,
+  SlidersHorizontal,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { useAthletes } from '@/hooks/use-athletes';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge, idaTone, statusTone } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { PlayerCard } from '@/components/player-card/player-card';
 import { PlayerCardSkeleton } from '@/components/player-card/player-card-skeleton';
 import { EmptyFieldState } from './empty-field-state';
@@ -13,7 +29,8 @@ import { AthletesFiltersSheet } from './athletes-filters-sheet';
 import { calcularIda, calcularIdade, calcularIndicador, classificarIda, mediaGeral } from '@/lib/calculations';
 import { calcularRaridade, type Raridade } from '@/lib/rarity';
 import { exportarBaseExcel } from '@/lib/exports';
-import { type Categoria, type Posicao, type StatusAtleta } from '@/entities/athlete';
+import { apiClient } from '@/lib/api-client';
+import { type Atleta, type Categoria, type Posicao, type StatusAtleta } from '@/entities/athlete';
 import { useUiStore } from '@/store/ui-store';
 import { useAuthStore } from '@/store/auth-store';
 import { useEffectivePermissions } from '@/store/permissions-store';
@@ -21,6 +38,7 @@ import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { hasAccess } from '@/lib/permissions';
 import { cn } from '@/lib/cn';
 import { NewAthleteDialog } from './new-athlete-dialog';
+import { EditAthleteDialog } from './edit-athlete-dialog';
 
 type Ordenacao = 'ida' | 'nome' | 'idade' | 'media';
 type Visualizacao = 'grade' | 'tabela';
@@ -39,13 +57,32 @@ const RARIDADE_PADRAO = 'Todas';
 
 export function AthletesPage() {
   const { data: atletas, isLoading } = useAthletes();
+  const selectedAthleteId = useUiStore((s) => s.selectedAthleteId);
   const setSelectedAthleteId = useUiStore((s) => s.setSelectedAthleteId);
   const user = useAuthStore((s) => s.user);
   const permissoes = useEffectivePermissions();
   const podeEscrever = !!user && hasAccess(permissoes, user.perfil, 'atletas', 'escrita');
   const [novoAtletaOpen, setNovoAtletaOpen] = useState(false);
   const [filtrosOpen, setFiltrosOpen] = useState(false);
+  const [editingAthlete, setEditingAthlete] = useState<Atleta | null>(null);
+  const [deletingAthlete, setDeletingAthlete] = useState<Atleta | null>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (atletaId: string) => apiClient.delete(`/api/athletes/${atletaId}`),
+    onSuccess: (_data, atletaId) => {
+      // remove (em vez de invalidar) a query desse atleta específico — ele não existe mais,
+      // então revalidá-la só geraria um GET /api/athletes/:id fadado a 404.
+      queryClient.removeQueries({ queryKey: ['athletes', atletaId] });
+      queryClient.invalidateQueries({ queryKey: ['athletes'], exact: true });
+      queryClient.invalidateQueries({ queryKey: ['evaluations'] });
+      toast.success('Atleta excluído com sucesso');
+      setDeletingAthlete(null);
+      if (selectedAthleteId === atletaId) setSelectedAthleteId(null);
+    },
+    onError: () => toast.error('Não foi possível excluir o atleta'),
+  });
 
   const [visualizacao, setVisualizacao] = useState<Visualizacao>('tabela');
   const [busca, setBusca] = useState(() => new URLSearchParams(window.location.search).get('busca') ?? '');
@@ -142,6 +179,22 @@ export function AthletesPage() {
       </div>
 
       <NewAthleteDialog open={novoAtletaOpen} onOpenChange={setNovoAtletaOpen} />
+      {editingAthlete && (
+        <EditAthleteDialog
+          atleta={editingAthlete}
+          open={!!editingAthlete}
+          onOpenChange={(v) => !v && setEditingAthlete(null)}
+        />
+      )}
+      <ConfirmDialog
+        open={!!deletingAthlete}
+        onOpenChange={(v) => !v && setDeletingAthlete(null)}
+        title={`Excluir ${deletingAthlete?.nome ?? 'atleta'}?`}
+        description="Essa ação não pode ser desfeita. As avaliações registradas para esse atleta também serão removidas."
+        confirmLabel="Excluir"
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deletingAthlete && deleteMutation.mutate(deletingAthlete.id)}
+      />
       <AthletesFiltersSheet
         open={filtrosOpen}
         onOpenChange={setFiltrosOpen}
@@ -284,11 +337,11 @@ export function AthletesPage() {
         <div className="overflow-hidden rounded-2xl border border-border bg-surface">
           <ul role="list" className="divide-y divide-border">
             {linhas.map(({ atleta, idade, media, ida, indicador }) => (
-              <li key={atleta.id}>
+              <li key={atleta.id} className="flex items-center">
                 <button
                   type="button"
                   onClick={() => handleActivate(atleta.id)}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-surface-alt"
+                  className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left hover:bg-surface-alt"
                 >
                   <Avatar name={atleta.nome} src={atleta.avatarUrl} size="md" />
                   <div className="min-w-0 flex-1">
@@ -308,6 +361,43 @@ export function AthletesPage() {
                   <span className="hidden text-xs sm:inline">{indicador.emoji}</span>
                   <ChevronRight size={18} className="shrink-0 text-text-muted" />
                 </button>
+
+                {podeEscrever && (
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button
+                        type="button"
+                        aria-label={`Mais ações para ${atleta.nome}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="mr-2 shrink-0 rounded-lg p-2 text-text-secondary hover:bg-surface-alt"
+                      >
+                        <MoreVertical size={18} />
+                      </button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        align="end"
+                        sideOffset={4}
+                        className="z-50 min-w-40 rounded-lg border border-border bg-surface p-1 shadow-xl"
+                      >
+                        <DropdownMenu.Item
+                          onSelect={() => setEditingAthlete(atleta)}
+                          className="flex cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-sm text-text-primary outline-none hover:bg-surface-alt data-[highlighted]:bg-surface-alt"
+                        >
+                          <Pencil size={14} />
+                          Editar
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          onSelect={() => setDeletingAthlete(atleta)}
+                          className="flex cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-sm text-accent-red outline-none hover:bg-surface-alt data-[highlighted]:bg-surface-alt"
+                        >
+                          <Trash2 size={14} />
+                          Excluir
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
+                )}
               </li>
             ))}
           </ul>

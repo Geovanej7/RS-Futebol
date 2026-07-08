@@ -46,7 +46,7 @@ const NOMES = [
 ];
 
 const CIDADES = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Curitiba', 'Porto Alegre', 'Salvador', 'Recife'];
-const ESCOLAS = ['EM Dom Pedro II', 'Colégio Santa Rita', 'EM Castro Alves', 'Colégio Anchieta', 'EM Machado de Assis'];
+const ALOJAMENTOS = ['Alojamento Principal', 'Alojamento Norte', 'Casa do Atleta', 'Alojamento Sub-15/17', 'Alojamento Sub-11/13'];
 
 const CATEGORIAS: Categoria[] = ['Sub-11', 'Sub-13', 'Sub-15', 'Sub-17', 'Sub-20'];
 const POSICOES: Posicao[] = ['Goleiro', 'Zagueiro', 'Lateral', 'Volante', 'Meia', 'Atacante'];
@@ -144,7 +144,7 @@ function buildAtleta(id: number): Atleta {
     peso: Math.round(range(45, 82)),
     avatarUrl: `https://randomuser.me/api/portraits/men/${id % 100}.jpg`,
     cidade: pick(CIDADES),
-    escola: pick(ESCOLAS),
+    alojamento: pick(ALOJAMENTOS),
     responsavel: `Responsável de ${NOMES[id % NOMES.length].split(' ')[0]}`,
     contato: `(11) 9${String(1000 + id).padStart(4, '0')}-${String(2000 + id).padStart(4, '0')}`,
     status,

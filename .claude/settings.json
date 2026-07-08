@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(nohup npm run dev)",
+      "Bash(node /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-edit-delete.mjs)",
+      "Bash(node test-edit-delete.mjs)",
+      "Bash(npm ls *)",
+      "Bash(grep -n \"playwright\" package.json package-lock.json 2>/dev/null | head -10; echo \"---npx cache---\"; find ~/.npm -maxdepth 4 -iname \"*playwright*\" 2>/dev/null | head -10; find ~/.cache -maxdepth 4 -iname \"*playwright*\" 2>/dev/null | head -10; which npx; npx --version)",
+      "Read(//home/devgeo/.npm/**)",
+      "Read(//home/devgeo/.cache/**)",
+      "Bash(NODE_PATH=\"/home/devgeo/.npm/_npx/e41f203b7505f1fb/node_modules\" node /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-edit-delete.mjs)",
+      "Bash(ln -sfn \"/home/devgeo/.npm/_npx/e41f203b7505f1fb/node_modules\" \"/tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/node_modules\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/ --max-time 3)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} in %{time_total}s\\\\n\" http://localhost:5173/ --max-time 5)",
+      "Bash(curl -s http://localhost:5173/ -o /dev/null)",
+      "Bash(curl -s http://localhost:5173/src/main.tsx -o /dev/null)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} in %{time_total}s\\\\n\" http://localhost:5173/ --max-time 10)",
+      "Bash(timeout 90 node /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-edit-delete.mjs)",
+      "Bash(timeout 30 node /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-minimal.mjs)",
+      "Bash(pkill -f \"node /home/devgeo/workspace/manguehouse/fut/node_modules/.bin/vite\")",
+      "Bash(rm -f /tmp/vite-dev.log)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/ --max-time 5)",
+      "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-edit-delete.mjs /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-minimal.mjs /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/edit-*.png /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/drawer-*.png)",
+      "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/node_modules)",
+      "Bash(node /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-alojamento.mjs)",
+      "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-alojamento.mjs \\\\ *)"
+    ],
+    "additionalDirectories": [
+      "/tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad"
+    ]
+  }
+}

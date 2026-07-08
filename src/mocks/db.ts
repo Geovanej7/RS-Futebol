@@ -39,6 +39,42 @@ export function addAthlete(atleta: Atleta): void {
   athletesDb.push(atleta);
 }
 
+export type DadosEditaveisAtleta = Pick<
+  Atleta,
+  | 'nome'
+  | 'dataNascimento'
+  | 'categoria'
+  | 'posicao'
+  | 'peDominante'
+  | 'altura'
+  | 'peso'
+  | 'cidade'
+  | 'alojamento'
+  | 'responsavel'
+  | 'contato'
+  | 'avatarUrl'
+  | 'status'
+  | 'observacoes'
+>;
+
+export function updateAthlete(atletaId: string, dados: DadosEditaveisAtleta): Atleta | null {
+  const atleta = athletesDb.find((a) => a.id === atletaId);
+  if (!atleta) return null;
+  Object.assign(atleta, dados);
+  return atleta;
+}
+
+export function deleteAthlete(atletaId: string): boolean {
+  const index = athletesDb.findIndex((a) => a.id === atletaId);
+  if (index === -1) return false;
+  athletesDb.splice(index, 1);
+  // evita avaliações "zumbi" apontando pra um atleta que não existe mais
+  for (let i = avaliacoesDb.length - 1; i >= 0; i--) {
+    if (avaliacoesDb[i].atletaId === atletaId) avaliacoesDb.splice(i, 1);
+  }
+  return true;
+}
+
 export function addScoutNote(atletaId: string, nota: { id: string; data: string; autor: string; texto: string }): Atleta | null {
   const atleta = athletesDb.find((a) => a.id === atletaId);
   if (!atleta) return null;

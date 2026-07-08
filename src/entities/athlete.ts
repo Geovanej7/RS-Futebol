@@ -89,7 +89,7 @@ export interface Atleta {
   altura: number;
   peso: number;
   cidade: string;
-  escola: string;
+  alojamento: string;
   responsavel: string;
   contato: string;
   status: StatusAtleta;
