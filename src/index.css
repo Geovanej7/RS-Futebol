@@ -123,10 +123,51 @@ body {
 .grain-texture {
   position: absolute;
   inset: 0;
-  opacity: 0.05;
+  opacity: 0.09;
   mix-blend-mode: overlay;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Acabamento de metal estampado do PlayerCard — luz radial, raios e vinheta. Sempre neutras
+   (branco/preto + blend mode), nunca cor sólida, para funcionar sobre qualquer gradiente de
+   raridade (config.gradiente) sem precisar recalibrar cor por tier. */
+.card-texture-light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(120% 60% at 50% 20%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1) 45%, transparent 72%);
+}
+
+.card-texture-rays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 42%,
+    rgba(255, 255, 255, 0.5) 0deg 3deg,
+    rgba(255, 255, 255, 0.1) 3deg 9deg,
+    rgba(255, 255, 255, 0.45) 9deg 13deg,
+    rgba(255, 255, 255, 0.06) 13deg 21deg,
+    rgba(255, 255, 255, 0.4) 21deg 24deg,
+    rgba(255, 255, 255, 0.08) 24deg 33deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 42%, black 0%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.25) 100%);
+  mask-image: radial-gradient(circle at 50% 42%, black 0%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.25) 100%);
+}
+
+.card-texture-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -10px 16px -6px rgba(0, 0, 0, 0.4),
+    inset 0 0 22px rgba(0, 0, 0, 0.2);
 }
 
 .card-3d-perspective {
@@ -143,4 +184,40 @@ body {
 
 .card-3d-face-back {
   transform: rotateY(180deg);
+}
+
+@keyframes drawer-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawer-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawer-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }

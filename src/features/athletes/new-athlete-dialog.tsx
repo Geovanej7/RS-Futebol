@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { X, Loader2, Camera } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { useUiStore } from '@/store/ui-store';
+import { Select } from '@/components/ui/select';
 import { CATEGORIAS, POSICOES, type Atleta } from '@/entities/athlete';
 import {
   athleteFormSchema,
@@ -129,28 +130,46 @@ export function NewAthleteDialog({ open, onOpenChange }: { open: boolean; onOpen
                 <input type="date" {...register('dataNascimento')} className={INPUT_CLASS} />
               </Field>
               <Field label="Pé dominante">
-                <select {...register('peDominante')} className={INPUT_CLASS}>
-                  {PES_DOMINANTES.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                <Controller
+                  control={control}
+                  name="peDominante"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      options={PES_DOMINANTES.map((p) => ({ value: p, label: p }))}
+                    />
+                  )}
+                />
               </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <Field label="Categoria">
-                <select {...register('categoria')} className={INPUT_CLASS}>
-                  {CATEGORIAS.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                <Controller
+                  control={control}
+                  name="categoria"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      options={CATEGORIAS.map((c) => ({ value: c, label: c }))}
+                    />
+                  )}
+                />
               </Field>
               <Field label="Posição">
-                <select {...register('posicao')} className={INPUT_CLASS}>
-                  {POSICOES.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                <Controller
+                  control={control}
+                  name="posicao"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      options={POSICOES.map((p) => ({ value: p, label: p }))}
+                    />
+                  )}
+                />
               </Field>
             </div>
 

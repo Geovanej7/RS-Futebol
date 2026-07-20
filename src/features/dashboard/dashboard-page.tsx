@@ -14,6 +14,7 @@ import {
   Legend,
 } from 'recharts';
 import { KpiCard } from '@/components/ui/kpi-card';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PlayerCardCompact } from '@/components/player-card/player-card-compact';
@@ -116,19 +117,13 @@ export function DashboardPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <select
+        <Select
           value={categoriaFiltro}
-          onChange={(e) => setCategoriaFiltro(e.target.value as Categoria | 'Todas')}
-          aria-label="Filtrar por categoria"
-          className="w-full rounded-lg border border-border bg-surface-alt px-3 py-2 text-sm text-text-primary sm:w-56"
-        >
-          <option value="Todas">Todas as categorias</option>
-          {CATEGORIAS.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+          onValueChange={(v) => setCategoriaFiltro(v as Categoria | 'Todas')}
+          ariaLabel="Filtrar por categoria"
+          triggerClassName="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface-alt px-3 py-2 text-sm text-text-primary outline-none focus:border-accent-blue sm:w-56"
+          options={[{ value: 'Todas', label: 'Todas as categorias' }, ...CATEGORIAS.map((c) => ({ value: c, label: c }))]}
+        />
 
         <button
           type="button"

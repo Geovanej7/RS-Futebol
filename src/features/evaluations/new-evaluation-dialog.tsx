@@ -7,6 +7,7 @@ import { apiClient } from '@/lib/api-client';
 import { useAthletes } from '@/hooks/use-athletes';
 import { useAuthStore } from '@/store/auth-store';
 import { SliderField } from '@/components/ui/slider-field';
+import { Select } from '@/components/ui/select';
 import { mediaFisica, mediaPsico, mediaTatica, mediaTecnica } from '@/lib/calculations';
 import { podeEditarGrupo } from '@/lib/permissions';
 import { RARIDADES_ORDEM, type Raridade } from '@/lib/rarity';
@@ -113,18 +114,13 @@ export function NewEvaluationDialog({
           >
             <label className="block text-sm">
               <span className="mb-1 block text-xs font-medium text-text-secondary">Atleta</span>
-              <select
+              <Select
                 value={atletaId}
-                onChange={(e) => setAtletaId(e.target.value)}
-                aria-label="Selecionar atleta"
-                className="w-full rounded-lg border border-border bg-surface-alt px-3 py-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none"
-              >
-                {(atletas ?? []).map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.nome}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setAtletaId}
+                ariaLabel="Selecionar atleta"
+                placeholder="Selecione um atleta"
+                options={(atletas ?? []).map((a) => ({ value: a.id, label: a.nome }))}
+              />
             </label>
 
             <p className="text-xs text-text-muted">

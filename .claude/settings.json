@@ -26,7 +26,17 @@
       "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-edit-delete.mjs /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-minimal.mjs /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/edit-*.png /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/drawer-*.png)",
       "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/node_modules)",
       "Bash(node /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-alojamento.mjs)",
-      "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-alojamento.mjs \\\\ *)"
+      "Bash(rm -f /tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad/test-alojamento.mjs \\\\ *)",
+      "Bash(npx eslint *)",
+      "Bash(npx oxlint *)",
+      "Bash(kill 14812 14813)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(command -v chromium-cli)",
+      "Read(//usr/local/bin/**)",
+      "Bash(node -e \"require\\('playwright'\\); console.log\\('playwright ok'\\)\")",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npx --no-install playwright install --dry-run chromium)"
     ],
     "additionalDirectories": [
       "/tmp/claude-1000/-home-devgeo-workspace-manguehouse-fut/ea776254-805e-402a-81ad-5bdc8ef89afd/scratchpad"

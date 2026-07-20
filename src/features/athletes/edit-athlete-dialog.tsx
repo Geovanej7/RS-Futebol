@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { X, Loader2, Camera } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
+import { Select } from '@/components/ui/select';
 import { CATEGORIAS, POSICOES, STATUS_ATLETA, type Atleta, type StatusAtleta } from '@/entities/athlete';
 import {
   athleteFormSchema,
@@ -140,28 +141,46 @@ export function EditAthleteDialog({
                 <input type="date" {...register('dataNascimento')} className={INPUT_CLASS} />
               </Field>
               <Field label="Pé dominante">
-                <select {...register('peDominante')} className={INPUT_CLASS}>
-                  {PES_DOMINANTES.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                <Controller
+                  control={control}
+                  name="peDominante"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      options={PES_DOMINANTES.map((p) => ({ value: p, label: p }))}
+                    />
+                  )}
+                />
               </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <Field label="Categoria">
-                <select {...register('categoria')} className={INPUT_CLASS}>
-                  {CATEGORIAS.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                <Controller
+                  control={control}
+                  name="categoria"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      options={CATEGORIAS.map((c) => ({ value: c, label: c }))}
+                    />
+                  )}
+                />
               </Field>
               <Field label="Posição">
-                <select {...register('posicao')} className={INPUT_CLASS}>
-                  {POSICOES.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                <Controller
+                  control={control}
+                  name="posicao"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      options={POSICOES.map((p) => ({ value: p, label: p }))}
+                    />
+                  )}
+                />
               </Field>
             </div>
 
@@ -194,15 +213,11 @@ export function EditAthleteDialog({
 
             <label className="block text-sm">
               <span className="mb-1 block text-xs font-medium text-text-secondary">Status</span>
-              <select
+              <Select
                 value={status}
-                onChange={(e) => setStatus(e.target.value as StatusAtleta)}
-                className={INPUT_CLASS}
-              >
-                {STATUS_ATLETA.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+                onValueChange={(v) => setStatus(v as StatusAtleta)}
+                options={STATUS_ATLETA.map((s) => ({ value: s, label: s }))}
+              />
             </label>
 
             <label className="block text-sm">

@@ -13,10 +13,10 @@ export function MobileSidebarDrawer({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60 data-[state=open]:animate-in data-[state=open]:fade-in lg:hidden" />
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60 lg:hidden data-[state=open]:animate-[drawer-overlay-in_200ms_ease-out_forwards] data-[state=closed]:animate-[drawer-overlay-out_180ms_ease-in_forwards]" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="fixed inset-y-0 left-0 z-50 h-full w-72 max-w-[85vw] outline-none lg:hidden"
+          className="fixed inset-y-0 left-0 z-50 h-full w-72 max-w-[85vw] outline-none lg:hidden data-[state=open]:animate-[drawer-slide-in_220ms_ease-out_forwards] data-[state=closed]:animate-[drawer-slide-out_200ms_ease-in_forwards]"
         >
           <Dialog.Title className="sr-only">Menu de navegação</Dialog.Title>
           <Sidebar alertCount={alertCount} variant="mobile" />

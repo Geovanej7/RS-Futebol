@@ -124,6 +124,8 @@ export const PlayerCard = memo(function PlayerCard({
           style={{ borderColor: config.borda, background: `linear-gradient(155deg, ${config.gradiente[0]}, ${config.gradiente[1]})` }}
         >
           <div className="grain-texture" />
+          <div className="card-texture-light" aria-hidden="true" />
+          <div className="card-texture-rays" aria-hidden="true" />
 
           {config.acabamento === 'holografico' && !reducedMotion && (
             <motion.div
@@ -218,6 +220,8 @@ export const PlayerCard = memo(function PlayerCard({
               ))}
             </div>
           </div>
+
+          <div className="card-texture-vignette" aria-hidden="true" />
         </div>
 
         {/* Verso — só existe (e só carrega o radar) quando o card é flippable */}

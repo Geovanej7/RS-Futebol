@@ -22,6 +22,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge, idaTone, statusTone } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { Select } from '@/components/ui/select';
 import { PlayerCard } from '@/components/player-card/player-card';
 import { PlayerCardSkeleton } from '@/components/player-card/player-card-skeleton';
 import { EmptyFieldState } from './empty-field-state';
@@ -237,19 +238,14 @@ export function AthletesPage() {
         </button>
 
         <div className="relative min-w-0 flex-1">
-          <ArrowUpDown size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
-          <select
+          <ArrowUpDown size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 z-10 text-text-muted" />
+          <Select
             value={ordenacao}
-            onChange={(e) => setOrdenacao(e.target.value as Ordenacao)}
-            aria-label="Ordenar por"
-            className="w-full rounded-lg border border-border bg-surface-alt py-2 pl-7 pr-2 text-xs font-medium text-text-primary sm:text-sm"
-          >
-            {ORDENACAO_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            onValueChange={(v) => setOrdenacao(v as Ordenacao)}
+            ariaLabel="Ordenar por"
+            options={ORDENACAO_OPTIONS}
+            triggerClassName="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface-alt py-2 pl-7 pr-2 text-xs font-medium text-text-primary outline-none focus:border-accent-blue sm:text-sm"
+          />
         </div>
 
         <div className="flex shrink-0 rounded-lg border border-border bg-surface-alt p-0.5">

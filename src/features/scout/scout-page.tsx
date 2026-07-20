@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PlayerCard } from '@/components/player-card/player-card';
 import { Badge } from '@/components/ui/badge';
+import { Select } from '@/components/ui/select';
 import { calcularIda, calcularTendencia } from '@/lib/calculations';
 import { apiClient } from '@/lib/api-client';
 import { useAuthStore } from '@/store/auth-store';
@@ -60,28 +61,18 @@ export function ScoutPage() {
             className="w-full rounded-lg border border-border bg-surface-alt py-2 pl-8 pr-2 text-sm text-text-primary focus:border-accent-blue focus:outline-none"
           />
         </div>
-        <select
+        <Select
           value={categoria}
-          onChange={(e) => setCategoria(e.target.value as Categoria | 'Todas')}
-          aria-label="Filtrar por categoria"
-          className="rounded-lg border border-border bg-surface-alt px-2 py-2 text-sm text-text-primary"
-        >
-          <option value="Todas">Categoria</option>
-          {CATEGORIAS.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-        <select
+          onValueChange={(v) => setCategoria(v as Categoria | 'Todas')}
+          ariaLabel="Filtrar por categoria"
+          options={[{ value: 'Todas', label: 'Categoria' }, ...CATEGORIAS.map((c) => ({ value: c, label: c }))]}
+        />
+        <Select
           value={posicao}
-          onChange={(e) => setPosicao(e.target.value as Posicao | 'Todas')}
-          aria-label="Filtrar por posição"
-          className="rounded-lg border border-border bg-surface-alt px-2 py-2 text-sm text-text-primary"
-        >
-          <option value="Todas">Posição</option>
-          {POSICOES.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
+          onValueChange={(v) => setPosicao(v as Posicao | 'Todas')}
+          ariaLabel="Filtrar por posição"
+          options={[{ value: 'Todas', label: 'Posição' }, ...POSICOES.map((p) => ({ value: p, label: p }))]}
+        />
       </div>
 
       {filtrados.length === 0 ? (

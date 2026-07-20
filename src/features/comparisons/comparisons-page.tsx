@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, X, GitCompare } from 'lucide-react';
 import { PlayerCard } from '@/components/player-card/player-card';
+import { Select } from '@/components/ui/select';
 import {
   Radar,
   RadarChart,
@@ -154,20 +155,14 @@ export function ComparisonsPage() {
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {ids.map((id, index) => (
           <div key={index} className="flex items-center gap-2">
-            <select
+            <Select
               value={id}
-              onChange={(e) => atualizarSelecao(index, e.target.value)}
-              aria-label={`Atleta ${index + 1}`}
-              className="w-full rounded-lg border border-border bg-surface-alt px-3 py-2 text-sm text-text-primary"
-            >
-              {atletas
+              onValueChange={(v) => atualizarSelecao(index, v)}
+              ariaLabel={`Atleta ${index + 1}`}
+              options={atletas
                 .filter((a) => a.id === id || !ids.includes(a.id))
-                .map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.nome}
-                  </option>
-                ))}
-            </select>
+                .map((a) => ({ value: a.id, label: a.nome }))}
+            />
             {ids.length > 2 && (
               <button
                 type="button"
